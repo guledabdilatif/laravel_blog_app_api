@@ -88,7 +88,10 @@ class PostController extends Controller
     {
         try {
             // $post = Post::find($post_id);
-            $post=Post::with('user', 'comment', 'likes')->where('id',$post_id)->first();
+            $post=Post::with('user', 'comment','likes')
+            ->withCount('likes')
+            ->where('id',$post_id)
+            ->first();
             return response()->json([
                 "post" => $post
             ]);
