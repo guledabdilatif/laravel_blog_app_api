@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\CasestudiesController;
 use App\Http\Controllers\CommmentController;
 use App\Http\Controllers\LikeController;
 use App\Http\Controllers\PostController;
@@ -17,6 +18,7 @@ Route::post('/login', [AuthController::class, 'login']);
 Route::get('/all/post', [PostController::class, 'getAllPost']);
 // get single post    
 Route::get('/getPost/{post_id}', [PostController::class, 'getSinglePost']);
+Route::apiResource('/case-studies', CasestudiesController::class);
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout']);
