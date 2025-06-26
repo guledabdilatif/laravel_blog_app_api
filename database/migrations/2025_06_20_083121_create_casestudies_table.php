@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('casestudies', function (Blueprint $table) {
-          $table->id();
+            $table->id();
             $table->string('title');
             $table->string('role')->nullable();
             $table->text('goal')->nullable();
@@ -20,6 +20,8 @@ return new class extends Migration
             $table->string('mockup_image')->nullable();
             $table->string('prototype_image')->nullable();
             $table->string('final_design_image')->nullable();
+            $table->text('what_i_learned')->nullable();
+            $table->text('tech_stack')->nullable();
             $table->timestamps();
         });
     }

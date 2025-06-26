@@ -1,13 +1,14 @@
 <?php
 
 namespace App\Models;
+
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Casestudies extends Model
 {
-     use HasFactory;
-     protected $fillable = [
+    use HasFactory;
+    protected $fillable = [
         'title',
         'role',
         'goal',
@@ -15,5 +16,7 @@ class Casestudies extends Model
         'mockup_image',
         'prototype_image',
         'final_design_image',
+        'what_i_learned',      
+        'tech_stack',
     ];
 }

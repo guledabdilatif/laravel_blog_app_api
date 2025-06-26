@@ -27,14 +27,22 @@ class CasestudiesController extends Controller
         });
     }
 
-
-
-
     /**
      * Store a newly created resource in storage.
      */
     public function store(Request $request)
     {
+        $request->validate([
+            'title' => 'required|string',
+            'role' => 'nullable|string',
+            'goal' => 'nullable|string',
+            'what_i_learned' => 'nullable|string',
+            'tech_stack' => 'nullable|string',
+            'wireframe_image' => 'nullable|image',
+            'mockup_image' => 'nullable|image',
+            'prototype_image' => 'nullable|image',
+            'final_design_image' => 'nullable|image',
+        ]);
         $data = $request->all();
 
         if ($request->hasFile('wireframe_image')) {
@@ -61,23 +69,25 @@ class CasestudiesController extends Controller
     /**
      * Display the specified resource.
      */
-  public function show($id)
-{
-    $casestudy = \App\Models\Casestudies::findOrFail($id);
+    public function show($id)
+    {
+        $casestudy = \App\Models\Casestudies::findOrFail($id);
 
-    foreach ([
-        'wireframe_image',
-        'mockup_image',
-        'prototype_image',
-        'final_design_image'
-    ] as $field) {
-        $casestudy->$field = $casestudy->$field
-            ? asset('storage/' . $casestudy->$field)
-            : null;
+        foreach (
+            [
+                'wireframe_image',
+                'mockup_image',
+                'prototype_image',
+                'final_design_image'
+            ] as $field
+        ) {
+            $casestudy->$field = $casestudy->$field
+                ? asset('storage/' . $casestudy->$field)
+                : null;
+        }
+
+        return response()->json($casestudy);
     }
-
-    return response()->json($casestudy);
-}
 
 
     /**
