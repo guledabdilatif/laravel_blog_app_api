@@ -67,7 +67,7 @@ class CasestudiesController extends Controller
 
     public function show($id)
     {
-        $casestudy = \App\Models\Casestudies::findOrFail($id);
+        $casestudy = Casestudies::findOrFail($id);
 
         foreach (
             [
@@ -86,72 +86,57 @@ class CasestudiesController extends Controller
     }
 
     public function update(Request $request, $id)
-{
-    // Validate inputs
-    $request->validate([
-        'title' => 'sometimes|required|string',
-        'role' => 'sometimes|nullable|string',
-        'goal' => 'sometimes|nullable|string',
-        'what_i_learned' => 'sometimes|nullable|string',
-        'tech_stack' => 'sometimes|nullable|string',
-        'wireframe_image' => 'sometimes|nullable|image',
-        'mockup_image' => 'sometimes|nullable|image',
-        'prototype_image' => 'sometimes|nullable|image',
-        'final_design_image' => 'sometimes|nullable|image',
-    ]);
+    {
+        $request->validate([
+            'title' => 'sometimes|required|string',
+            'role' => 'sometimes|nullable|string',
+            'goal' => 'sometimes|nullable|string',
+            'what_i_learned' => 'sometimes|nullable|string',
+            'tech_stack' => 'sometimes|nullable|string',
+            'wireframe_image' => 'sometimes|nullable|image',
+            'mockup_image' => 'sometimes|nullable|image',
+            'prototype_image' => 'sometimes|nullable|image',
+            'final_design_image' => 'sometimes|nullable|image',
+        ]);
 
-    $casestudy = Casestudies::findOrFail($id);
+        $casestudy = Casestudies::findOrFail($id);
+        $data = [];
 
-    // Capture only fields that exist in the request
-    $data = [];
-
-    foreach (['title', 'role', 'goal', 'what_i_learned', 'tech_stack'] as $field) {
-        if ($request->exists($field)) {
-            $data[$field] = $request->input($field);
-        }
-    }
-
-    // Handle image fields
-    $imageFields = [
-        'wireframe_image' => 'case_study_images/wireframes',
-        'mockup_image' => 'case_study_images/mockups',
-        'prototype_image' => 'case_study_images/prototypes',
-        'final_design_image' => 'case_study_images/final_designs',
-    ];
-
-    foreach ($imageFields as $field => $folder) {
-        if ($request->hasFile($field)) {
-            // Delete old image if exists
-            if ($casestudy->$field && Storage::disk('public')->exists($casestudy->$field)) {
-                Storage::disk('public')->delete($casestudy->$field);
+        foreach (['title', 'role', 'goal', 'what_i_learned', 'tech_stack'] as $field) {
+            if ($request->exists($field)) {
+                $data[$field] = $request->input($field);
             }
-
-            // Store new image
-            $data[$field] = $request->file($field)->store($folder, 'public');
         }
+
+        $imageFields = [
+            'wireframe_image' => 'case_study_images/wireframes',
+            'mockup_image' => 'case_study_images/mockups',
+            'prototype_image' => 'case_study_images/prototypes',
+            'final_design_image' => 'case_study_images/final_designs',
+        ];
+
+        foreach ($imageFields as $field => $folder) {
+            if ($request->hasFile($field)) {
+                if ($casestudy->$field && Storage::disk('public')->exists($casestudy->$field)) {
+                    Storage::disk('public')->delete($casestudy->$field);
+                }
+                $data[$field] = $request->file($field)->store($folder, 'public');
+            }
+        }
+        if (!empty($data)) {
+            $casestudy->update($data);
+            $casestudy->refresh();
+        }
+        foreach (array_keys($imageFields) as $field) {
+            $casestudy->$field = $casestudy->$field
+                ? asset('storage/' . $casestudy->$field)
+                : null;
+        }
+        return response()->json([
+            'message' => 'Case study updated successfully.',
+            'data' => $casestudy
+        ]);
     }
-
-    // Log to help with debugging (optional)
-    // \Log::info('Update data for casestudy ID ' . $id, $data);
-
-    // Update if we have data
-    if (!empty($data)) {
-        $casestudy->update($data);
-        $casestudy->refresh();
-    }
-
-    // Update asset URLs for response
-    foreach (array_keys($imageFields) as $field) {
-        $casestudy->$field = $casestudy->$field
-            ? asset('storage/' . $casestudy->$field)
-            : null;
-    }
-
-    return response()->json([
-        'message' => 'Case study updated successfully.',
-        'data' => $casestudy
-    ]);
-}
 
 
 

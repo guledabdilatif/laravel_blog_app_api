@@ -8,6 +8,7 @@ use App\Http\Controllers\PostController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
+Route::apiResource('/case-studies', CasestudiesController::class);
 Route::get('/user', function (Request $request) {
     return $request->user();
 })->middleware('auth:sanctum');
@@ -18,7 +19,6 @@ Route::post('/login', [AuthController::class, 'login']);
 Route::get('/all/post', [PostController::class, 'getAllPost']);
 // get single post    
 Route::get('/getPost/{post_id}', [PostController::class, 'getSinglePost']);
-Route::apiResource('/case-studies', CasestudiesController::class);
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout']);
